@@ -10,6 +10,7 @@ import {
 
 import SelectOption from '../components/SelectOption';
 import Election from '../components/Election';
+import Loading from '../components/Loading';
 
 import { isValid } from '../helpers/functions';
 
@@ -19,6 +20,7 @@ export default function ElectionsPage() {
   const [allCandidates, setAllCandidates] = useState([]);
   const [filteredCity, setFilteredCity] = useState({});
   const [candidates, setCandidates] = useState([]);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     async function getAllData() {
@@ -31,6 +33,10 @@ export default function ElectionsPage() {
       setAllCities(backendAllCities);
       setAllElections(backendAllElections);
       setAllCandidates(backendAllCandidates);
+
+      setTimeout(() => {
+        setInitialLoading(false);
+      }, 500);
     }
 
     getAllData();
@@ -65,18 +71,33 @@ export default function ElectionsPage() {
     gatherDate(...city);
   }
 
+  let mainJsx = (
+    <div className="flex flex-row justify-center">
+      <Loading />
+    </div>
+  );
+
+  if (!initialLoading) {
+    return (
+      <>
+        <Header>react-elections v1.01</Header>
+        <Main>
+          <SelectOption
+            title="Escolha o município"
+            onSelectChange={handleCityFilterChange}
+          >
+            {allCities}
+          </SelectOption>
+          <Election city={filteredCity}>{candidates}</Election>
+        </Main>
+      </>
+    );
+  }
+
   return (
     <>
       <Header>react-elections v1.01</Header>
-      <Main>
-        <SelectOption
-          title="Escolha o município"
-          onSelectChange={handleCityFilterChange}
-        >
-          {allCities}
-        </SelectOption>
-        <Election city={filteredCity}>{candidates}</Election>
-      </Main>
+      <Main>{mainJsx}</Main>
     </>
   );
 }
