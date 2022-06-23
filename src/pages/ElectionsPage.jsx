@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Main from '../components/Main';
 
-import { apiGetAllCities } from '../services/apiService';
+import {
+  apiGetAllCandidates,
+  apiGetAllCities,
+  apiGetAllElections,
+} from '../services/apiService';
 
 import SelectOption from '../components/SelectOption';
 import Election from '../components/Election';
@@ -11,20 +15,54 @@ import { isValid } from '../helpers/functions';
 
 export default function ElectionsPage() {
   const [allCities, setAllCities] = useState([]);
-  const [cityFilter, setCityFilter] = useState({});
+  const [allElections, setAllElections] = useState([]);
+  const [allCandidates, setAllCandidates] = useState([]);
+  const [filteredCity, setFilteredCity] = useState({});
+  const [candidates, setCandidates] = useState([]);
 
   useEffect(() => {
     async function getAllData() {
-      const backendAllCities = await apiGetAllCities();
+      const backendAllCities = (await apiGetAllCities()).sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      const backendAllElections = await apiGetAllElections();
+      const backendAllCandidates = await apiGetAllCandidates();
+
       setAllCities(backendAllCities);
+      setAllElections(backendAllElections);
+      setAllCandidates(backendAllCandidates);
     }
 
     getAllData();
   }, []);
 
-  async function handleCityFilterChange(newCityFilter) {
-    const [{ ...city }] = newCityFilter;
-    setCityFilter(city);
+  function gatherDate(city) {
+    if (!isValid(city)) {
+      setFilteredCity({});
+      setCandidates([]);
+      return;
+    }
+
+    const candidatesByCity = allElections.filter(
+      election => election.cityId === city.id
+    );
+
+    const candidates = candidatesByCity.map(({ candidateId, votes }) => {
+      const candidateById = allCandidates.find(({ id }) => id === candidateId);
+      return {
+        candidateId,
+        candidateName: candidateById.name,
+        candidateUsername: candidateById.username,
+        candidateVotes: votes,
+      };
+    });
+
+    setFilteredCity(city);
+    setCandidates(candidates);
+  }
+
+  function handleCityFilterChange(city) {
+    gatherDate(...city);
   }
 
   return (
@@ -37,13 +75,7 @@ export default function ElectionsPage() {
         >
           {allCities}
         </SelectOption>
-        {isValid(cityFilter) ? (
-          <div className="border p-2 mb-4">
-            <Election>{cityFilter}</Election>
-          </div>
-        ) : (
-          ''
-        )}
+        <Election city={filteredCity}>{candidates}</Election>
       </Main>
     </>
   );

@@ -1,12 +1,16 @@
 import { formatDecimal, formatPercent } from '../helpers/functions';
 
-export default function Item({
-  name,
-  username,
-  votes,
-  percentage,
-  elected = false,
-}) {
+export default function Item({ children: candidate }) {
+  const {
+    candidateName: name,
+    candidateUsername: username,
+    candidateVotes: votes,
+    percentage,
+    elected,
+  } = candidate;
+
+  console.log(username);
+
   const candidateColor = elected ? 'text-green-400' : 'text-red-400';
 
   return (

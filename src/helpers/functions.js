@@ -13,5 +13,5 @@ export function formatPercent(value) {
 }
 
 export function isValid(obj) {
-  return Object.keys(obj).length > 0;
+  return obj !== undefined && Object.keys(obj).length > 0;
 }

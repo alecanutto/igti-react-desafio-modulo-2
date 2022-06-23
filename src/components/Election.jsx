@@ -1,25 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import Candidates from './Candidates';
 
 import { formatDecimal } from '../helpers/functions';
-import { apiGetElectionByCity } from '../services/apiService';
 
-export default function Election({ children: data }) {
-  const { id, name, votingPopulation, absence, presence } = data;
-  const [allCandidates, setAllCandidates] = useState([]);
+export default function Election({ children: candidates, city }) {
+  if (candidates.length === 0) return '';
 
-  useEffect(() => {
-    async function getAllData() {
-      const backendAllCandidates = await apiGetElectionByCity(id);
-      setAllCandidates(backendAllCandidates.sort((a, b) => b.votes - a.votes));
-    }
-
-    getAllData();
-  }, [id]);
+  const { name, votingPopulation, absence, presence } = city;
 
   return (
-    <div>
+    <div className="border p-2 mb-4">
       <p className="text-center font-semibold text-xl p-2">Eleição em {name}</p>
       <div className="flex items-center justify-center space-x-5">
         <span className="text-center font-semibold">
@@ -32,7 +23,7 @@ export default function Election({ children: data }) {
           Comparecimento: {formatDecimal(presence)}
         </span>
       </div>
-      {allCandidates.length > 0 ? <Candidates>{allCandidates}</Candidates> : ''}
+      <Candidates>{candidates}</Candidates>
     </div>
   );
 }

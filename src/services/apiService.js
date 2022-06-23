@@ -5,6 +5,16 @@ export async function apiGetAllCities() {
   return data;
 }
 
+export async function apiGetAllElections() {
+  const data = await read('/election');
+  return data;
+}
+
+export async function apiGetAllCandidates() {
+  const data = await read('/candidates');
+  return data;
+}
+
 export async function apiGetElectionByCity(cityId) {
   const data = await read(`/election?cityId=${cityId}`);
   return data;
