@@ -64,7 +64,9 @@ export default function ElectionsPage() {
     });
 
     setFilteredCity(city);
-    setCandidates(candidates);
+    setCandidates(
+      candidates.sort((a, b) => b.candidateVotes - a.candidateVotes)
+    );
   }
 
   function handleCityFilterChange(city) {
