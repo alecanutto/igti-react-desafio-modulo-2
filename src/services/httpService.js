@@ -3,7 +3,7 @@ import axios from 'axios';
 const BASE_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3001'
-    : 'igti-react-backend-m2-acanutto.glitch.me';
+    : 'https://igti-react-backend-m2-acanutto.glitch.me/';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
